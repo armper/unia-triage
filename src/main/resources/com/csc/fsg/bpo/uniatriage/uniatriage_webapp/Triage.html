@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:false,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;valo&quot;}">
+  <meta name="vaadin-version" content="8.0.5">
+ </head>
+ <body>
+  <vaadin-vertical-layout size-full>
+   <vaadin-horizontal-layout>
+    <vaadin-grid caption="Policy" data-item-type="com.csc.fsg.bpo.uniatriage.uniatriage_webapp.model.Policy" _id="policyGrid"></vaadin-grid>
+   </vaadin-horizontal-layout>
+   <vaadin-horizontal-layout>
+    <vaadin-grid caption="Agent" data-item-type="com.csc.fsg.bpo.uniatriage.uniatriage_webapp.model.Agent" _id="agentGrid">
+     <table>
+      <colgroup>
+       <col column-id="clientId" sortable>
+       <col column-id="companyId" sortable>
+       <col column-id="agentNumber" sortable>
+       <col column-id="statusId" sortable>
+       <col column-id="regionId" sortable>
+       <col column-id="ldHostSystem" sortable>
+       <col column-id="updatedBy" sortable>
+       <col column-id="updatedWhen" sortable>
+       <col column-id="fkaRegioncode" sortable>
+       <col column-id="fkaCompanycode" sortable>
+       <col column-id="agtLegacyId" sortable>
+       <col column-id="agtEliteStatus" sortable>
+       <col column-id="agentNpn" sortable>
+      </colgroup>
+      <thead>
+       <tr default>
+        <th plain-text column-ids="clientId">ClientId</th>
+        <th plain-text column-ids="companyId">CompanyId</th>
+        <th plain-text column-ids="agentNumber">AgentNumber</th>
+        <th plain-text column-ids="statusId">StatusId</th>
+        <th plain-text column-ids="regionId">RegionId</th>
+        <th plain-text column-ids="ldHostSystem">LdHostSystem</th>
+        <th plain-text column-ids="updatedBy">UpdatedBy</th>
+        <th plain-text column-ids="updatedWhen">UpdatedWhen</th>
+        <th plain-text column-ids="fkaRegioncode">FkaRegioncode</th>
+        <th plain-text column-ids="fkaCompanycode">FkaCompanycode</th>
+        <th plain-text column-ids="agtLegacyId">AgtLegacyId</th>
+        <th plain-text column-ids="agtEliteStatus">AgtEliteStatus</th>
+        <th plain-text column-ids="agentNpn">AgentNpn</th>
+       </tr>
+      </thead>
+      <tbody></tbody>
+     </table>
+    </vaadin-grid>
+   </vaadin-horizontal-layout>
+  </vaadin-vertical-layout>
+ </body>
+</html>

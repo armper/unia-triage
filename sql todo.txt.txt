@@ -1,0 +1,423 @@
+POLICIES WITHOUT AGENT ASSOCIATIONS
+-----------------------------------
+select host_key, count(policy_agent_id) 
+from cyberlife.policy pol 
+left join cyberlife.policy_agent pa on pol.policy_id=pa.policy_id 
+group by host_key 
+having count(policy_agent_id)=0 
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+POLICY BASICS AND AGENT INFO IF IT EXISTS (LEFT JOIN)
+------------------------------------------------
+select pol.policy_id, pol.company_id, pol.policy_number, pol.status_id, pol.updated_by, pol.updated_when
+ , pa.policy_agent_id, pa.client_id, pa.servicing_agent_flag, pa.writing_agent_flag, pa.commission_percentage, pa.agent_profile 
+ , agt.agent_number, agt.company_id
+ , client.search_first_name, client.search_last_name, client.search_company_name
+ from cyberlife.policy pol 
+ left join cyberlife.policy_agent pa on pol.policy_id = pa.policy_id
+ left join client.party client on pa.client_id=client.client_id
+ where pol.policy_number = 'UL00015232'
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+POLICY BASICS AND AGENT TYPE COUNT 
+
+select pol.policy_number, pol.company_id, a.agent_number, 
+sum(case when SERVICING_AGENT_FLAG in ('Y') then 1 else 0 end) as ServicingAgentCount,
+sum(case when WRITING_AGENT_FLAG in ('Y') then 1 else 0 end) as WritingAgentCount
+from cyberlife.policy pol 
+inner join cyberlife.policy_agent pa on pol.policy_id=pa.policy_id 
+inner join cyberlife.agent a on pa.client_id=a.client_id 
+group by pol.policy_number, pol.company_id, a.agent_number
+
+  -- 
+
+select pol.policy_number, pol.company_id  
+, sum(case when SERVICING_AGENT_FLAG in ('Y') then 1 else 0 end) as ServicingAgentCount,
+sum(case when WRITING_AGENT_FLAG in ('Y') then 1 else 0 end) as WritingAgentCount
+from cyberlife.policy pol 
+inner join cyberlife.policy_agent pa on pol.policy_id=pa.policy_id 
+where pol.issue_date < '11/01/2015' 
+group by pol.policy_number, pol.company_id
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+POLICIES WHERE WRITING AGENT != Servicing Agent 
+
+select pol.policy_number, pol.company_id, a.agent_number, a.agt_legacy_id, pa.writing_agent_flag, pa.primary_servicing_agent_flag, pa.servicing_agent_flag 
+from cyberlife.policy pol 
+inner join cyberlife.policy_agent pa on pol.policy_id=pa.policy_id 
+inner join cyberlife.agent a on pa.client_id=a.client_id 
+where pa.writing_agent_flag = 'N' and pa.servicing_agent_flag ='Y'
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+POLICY COUNT BY AGENT via POLICY AGENT ASSOC (not conversion default agent)
+
+select 
+ count(pol.policy_number) as CountOfPolicies
+ , agt.agent_number, agt.company_id
+ from cyberlife.policy_agent pa  
+ left join cyberlife.policy pol on pa.policy_id = pol.policy_id
+ join cyberlife.agent agt on agt.client_id=pa.client_id
+ where agt.agent_number != 'CONVERT002'
+ group by agt.agent_number, agt.company_id
+ order by CountOfPolicies DESC
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+select pol.policy_number, pol.company_id, pol.policy_id
+, port.participation_id
+, party.* 
+, pa.*
+from cyberlife.policy pol 
+left join client.portfolio port on pol.policy_id = port.bpo_policy_id  
+left join client.party party on party.client_id = port.client_id 
+left join cyberlife.policy_agent pa on pa.client_id = port.client_id
+where pol.policy_number in ('CT0000213')
+and port.participation_id = 34
+--
+-- 8	Owner
+-- 31	Interested Party
+-- 32	Insured
+-- 33	Covered Insured
+-- 34	Primary Beneficiary
+-- 37	Agent
+-- 35	Annuitant
+-- 1027	Additional Insured Spouse
+-- 1019	Joint Owner
+-- 1030	Child
+-- 1057	Beneficiary ?
+
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+POLICY WITH ISWL IND
+
+select pol.policy_number, pol.company_id, pol.product_type_id, pol.product_subtype_id, port.participation_id, coverage.*
+, party.* 
+from cyberlife.policy pol 
+inner join client.portfolio port on pol.policy_id = port.bpo_policy_id  
+inner join cyberlife.coverage coverage on pol.policy_id=coverage.policy_id
+inner join client.party party on party.client_id = port.client_id 
+where pol.iswl_ind = '1'
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ALSO ISWL -- 
+
+select pol.policy_number, pol.company_id, 
+sum(case when pol.iswl_ind = '1' then 1 else 0 end) as ISWLInd1Count,
+sum(case when  pol.iswl_ind = '2' then 1 else 0 end) as ISWLInd2Count
+from cyberlife.policy pol   
+group by pol.policy_number, pol.company_id
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+WHEN WAS THE LATEST POLICY DATA UPDATE
+
+select max(pol.updated_when)
+  from cyberlife.policy pol
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+POLICIES WITH SPECIFIC COVERAGES
+
+select pol.policy_number, pol.company_id, pol.product_type_id, pol.product_subtype_id, port.participation_id, coverage.*
+from cyberlife.policy pol 
+inner join client.portfolio port on pol.policy_id = port.bpo_policy_id  
+inner join cyberlife.coverage coverage on pol.policy_id=coverage.policy_id
+where coverage.plan_code in ('C0008D', 'C0008E', 'C0008F', 'C0008G', 'C0108B', 'C0108C', 'C0108D', 'C0108G', 'C0208B', 'C0208C', 'C0208D', 'C0208G')
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+POLICIES WITH RESTRICT CODES
+
+select pol.policy_number, pol.company_id, pol.product_type_id, pol.product_subtype_id
+from cyberlife.policy pol 
+--- where   RESTRICT_CODE is not null
+where RESTRICT_CODE > 'a'
+ 
+select pol.policy_number, pol.company_id, pol.product_type_id, pol.product_subtype_id, pol.restrict_code
+-- , port.participation_id, 
+-- coverage.*
+--, party.* 
+from cyberlife.policy pol 
+--inner join client.portfolio port on pol.policy_id = port.bpo_policy_id  
+-- inner join cyberlife.coverage coverage on pol.policy_id=coverage.policy_id
+-- inner join client.party party on party.client_id = port.client_id 
+where   RESTRICT_CODE is not null
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+select pol.policy_id, pol.company_id, pol.policy_number, pol.status_id, pol.mec_ind, pol.seven_pay_prem, pol.iswl_ind 
+from cyberlife.policy pol
+where ((pol.iswl_ind is not null) or (pol.mec_ind is not null)) 
+order by pol.seven_pay_prem desc
+
+select pol.policy_id, pol.company_id, pol.policy_number, pol.status_id, pol.restrict_code, pol.product_type_id , pol.mec_ind, pol.seven_pay_prem, pol.iswl_ind 
+, cov.plan_code
+from cyberlife.policy pol
+join cyberlife.coverage cov on pol.policy_id = cov.policy_id
+where ((pol.iswl_ind = 1) and (pol.mec_ind is not null)) 
+and pol.product_type_id = 911
+order by pol.seven_pay_prem desc
+
+---
+POLICIES WITH STRATEGIES - BASIC and OTHER COUNT
+
+select pol.policy_number, pol.company_id, strategy.*
+from cyberlife.strategy strategy 
+inner join cyberlife.policy pol on pol.policy_id=strategy.policy_id  
+where pol.policy_number = 
+
+select pol.policy_number, pol.company_id,
+sum(case when STRATEGY_TYPE_ID in (2) then 1 else 0 end) as StrategyType2Count,
+sum(case when STRATEGY_TYPE_ID not in (2) then 1 else 0 end) as OtherStrategyCount
+from cyberlife.strategy strategy inner join cyberlife.policy pol on pol.policy_id=strategy.policy_id  
+group by pol.policy_number, pol.company_id
+order by OtherStrategyCount
+
+select pol.policy_number, pol.company_id,
+sum(case when STRATEGY_TYPE_ID in (2) then 1 else 0 end) as StrategyType2Count,
+sum(case when STRATEGY_TYPE_ID not in (2) then 1 else 0 end) as OtherStrategyCount
+from cyberlife.strategy strategy inner join cyberlife.policy pol on pol.policy_id=strategy.policy_id  
+group by pol.policy_number, pol.company_id
+order by StrategyType2Count ASC
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+DISTINCT PLAN CODES ON POLICY
+
+select distinct coverage.plan_code 
+from cyberlife.policy pol 
+inner join client.portfolio port on pol.policy_id = port.bpo_policy_id  
+inner join cyberlife.coverage coverage on pol.policy_id=coverage.policy_id 
+group by coverage.plan_code
+
+POLICY COUNT BY (DISTINCT) PLAN CODE
+select distinct coverage.plan_code, count(Distinct pol.policy_number) as CountOfPolicies
+from cyberlife.policy pol 
+inner join client.portfolio port on pol.policy_id = port.bpo_policy_id  
+inner join cyberlife.coverage coverage on pol.policy_id=coverage.policy_id 
+group by coverage.plan_code
+
+
+select company_id, count (distinct policy_number)
+from cyberlife.policy
+group by company_id
+
+
+POLICY COMPANY AND BASE PLANS (ONLY) - not considering agent assoc
+select pol.company_id, pol.policy_number, cov.plan_code, cov.base_benefit_flag 
+from cyberlife.policy pol
+inner join cyberlife.coverage cov on pol.policy_id=cov.policy_id
+where cov.base_benefit_flag='Y'	 
+
+- or - 
+select pol.company_id, pol.policy_number, cov.plan_code, cov.base_benefit_flag 
+from cyberlife.policy pol
+inner join cyberlife.coverage cov on pol.policy_id=cov.policy_id
+where cov.base_benefit_flag <> 'Y'
+
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+AGENT with last 4 of  GOVT ID
+
+select 
+ agt.agent_number, agt.company_id, substr(clnt.gov_id,6,4) as l4
+ from cyberlife.agent agt 
+ join client.party clnt on agt.client_id=clnt.client_id
+ where agt.agent_number in ( )
+
+
+
+select count (distinct policy_id) from cyberlife.policy_agent;
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+VALIDATION CHECKS
+ 
+Policies in >1 company
+select distinct policy_number from cyberlife.policy group by policy_number having count(policy_id) > 1
+
+select company_id, count(distinct policy_number) as CountofDistinctPolicyNumbers
+from cyberlife.policy_agent pa 
+inner join cyberlife.policy p on p.policy_id = pa.policy_id 
+group by company_id
+
+select company_id, count(distinct policy_number) as countofdistinctpolicynumbers
+from cyberlife.policy 
+group by company_id
+ 
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Policies with a company (as opposed to individual)  as owner who are in the J04, J11, J18 J28 , J14 companies in wma and if so, what the owner name is that they could search on
+
+select party.search_company_name, pol.policy_id, pol.company_id, pol.policy_number, pol.status_id, pol.restrict_code, pol.updated_by, pol.updated_when  
+from client.portfolio portfolio 
+inner join client.party party on portfolio.client_id = party.client_id and portfolio.PARTICIPATION_ID=8 
+inner join cyberlife.policy pol on pol.policy_id = portfolio.bpo_policy_id  
+where portfolio.bpo_company_id in (430,437,440,444,458) and search_company_name is not null
+
+~~~~~~~~~~~~~
+select count (distinct pol.policy_number) as distinctPolicyNumberCnt
+from cyberlife.policy pol
+
+select count (distinct agt.agent_number) as distinctAgentNumberCnt
+from cyberlife.agent agt
+
+
+~~~~~~~~~~~
+MISC QUERIES from email.. 
+
+select pol.policy_number, pol.company_id, a.agent_number, a.agt_legacy_id, pa.primary_servicing_agent_flag, pa.servicing_agent_flag 
+from cyberlife.policy pol 
+inner join cyberlife.policy_agent pa on pol.policy_id=pa.policy_id 
+inner join cyberlife.agent a on pa.client_id=a.client_id 
+where pol.policy_number in ('AB02820710','AB03212270','AB03367010','AB03367020','IL01983500','IL01983530','IL02081760','IL02186360','IL02191150','IL02225290'); 
+
+select pol.policy_id, pol.company_id, pol.policy_number, pol.status_id, pol.updated_by, pol.updated_when
+, pa.policy_agent_id, pa.client_id, pa.servicing_agent_flag, pa.writing_agent_flag, pa.commission_percentage, pa.agent_profile 
+ , agt.agent_number, agt.company_id
+, client.search_first_name, client.search_last_name, client.search_company_name
+from cyberlife.policy pol 
+ left join cyberlife.policy_agent pa on pol.policy_id = pa.policy_id
+left join cyberlife.agent agt on agt.client_id=pa.client_id
+left join client.party client on pa.client_id=client.client_id
+where pol.policy_number in ('AB02144310','AB01351420','AB00950080')
+
+
+~~
+QUERY FOR DOI CA issue - joins with AV values table --Per Ramsey, Dewayne: 
+the av tables are used by some crystal reports.    The tables aren't always populated but we have a loader that will load those tables with the av values so can run that if needed on a particular db.)
+
+
+select avcomp.descr as CompanyCode,  avstate.descr as StateCode, count(pol.policy_id) as PolicyCount 
+from cyberlife.policy pol inner join av.avdescr avcomp on company_id=avcomp.internal_value 
+inner join av.avdomain compdomain on avcomp.domain_id=compdomain.id and compdomain.av_name='CompanyCode' 
+inner join av.avdescr avstate on issue_state_code_id=avstate.internal_value 
+inner join av.avdomain statedomain on avstate.domain_id=statedomain.id and statedomain.av_name='State' 
+where pol.status_id in (1,3,9,10,15,18,20,23,24,25,29,30,31,32,41,46,47,48,53,54,61,64,900,901,902,904,905,906,907,908,923,924,925,927,929,930,931,934,935,937,938,939,941,942,943,1000500001,1000500002,1000500003,1000500004,1000500005,1000500009,1000500010) 
+group by avcomp.descr, avstate.descr  order by avcomp.descr, avstate.descr;
+
+~~~
+related to HMI eDelivery  HH email address
+
+select policy.household_id, policy.policy_number as policy_id, party.SEARCH_FIRST_NAME , party.SEARCH_LAST_NAME , party.EMAIL_ADDRESS, policy.issue_state_code_id  , cov.plan_code, cov.PRODUCT_NAME
+from cyberlife.policy policy 
+inner join client.portfolio portfolio on policy.policy_id=portfolio.bpo_policy_id 
+inner join client.party party on portfolio.client_id=party.client_id 
+inner join cyberlife.coverage cov on cov.policy_id = policy.policy_id and cov.BASE_BENEFIT_FLAG='Y' 
+where 			  portfolio.participation_id=32 and policy.status_id=1 
+				  and policy.household_id = '58A001616' 
+
+
+
+~~~~
+client.person_detail 
+client.party 
+select pol.policy_number, pol.company_id, pol.product_type_id, pol.product_subtype_id, port.participation_id, coverage.*
+, person.* 
+from cyberlife.policy pol 
+inner join client.portfolio port on pol.policy_id = port.bpo_policy_id  
+inner join cyberlife.coverage coverage on pol.policy_id=coverage.policy_id
+inner join client.party party on party.client_id = port.client_id 
+inner join client.person_detail person on person.client_id = port.client_id
+where  (person.suffix >'')
+
+
+~~~~
+QUERY FOR policies for a household_id 
+select policy_number from cyberlife.policy where household_id=???
+or 
+select household_id, policy_number from cyberlife.policy order by household_id, policy_number
+-or- for HMI new business HH IDs. 
+
+select household_id, policy_number, updated_when from cyberlife.policy 
+where substr(household_id,3,1)='A'
+order by updated_when desc
+
+
+select e_delivery_indicator from client.portfolio port inner join client.party party  on port..client_id =party.client_id where port.contract_id = {some policy number}
+
+
+~~~
+Query for search by phone # introduced for HMI 
+
+SELECT DISTINCT PARTY.CLIENT_ID, PARTY.CLIENT_STATUS , PARTY.CLIENT_TYPE_ID , PARTY.FULL_NAME , PARTY.GOV_ID , PARTY.GOV_ID_STATUS, PARTY.GOV_ID_TYPE , 
+PARTY.SEARCH_FIRST_NAME AS FIRST_NAME , PARTY.SEARCH_LAST_NAME AS LAST_NAME , 
+PARTY.SEARCH_COMPANY_NAME AS COMPANY_NAME, PARTY.SEARCH_ADDRESS_TYPE AS ADDRESS_TYPE ,PARTY.BPO_PHONE_NUMBER AS PHONE_NUMBER, PARTY.SEARCH_DOB AS DOB, 
+PARTY.SEARCH_DOB AS END_DOB , PARTY.UPDATED_BY , PARTY.UPDATED_WHEN, PARTY.BPO_AGENT_NUMBER AS AGENT_NUMBER , 
+PARTY.BPO_SEARCH_MIDDLE_NAME AS MIDDLE_NAME, PARTY.AGENT_FLAG,PORTFOLIO.CONTRACT_ID , PORTFOLIO.PARTICIPATION_ID AS ROLE_ID , 
+BPO_COMPANY_ID AS COMPANY , BPO_REGION_ID AS REGION, BPO_GROUP_BILLING_NUMBER AS GROUP_BILLING_NUMBER, 
+PORTFOLIO.STATUS AS POLICY_STATUS , 
+CLIENT.ADDRESS.COUNTRY,CLIENT.ADDRESS.CITY , CLIENT.ADDRESS.STATE , CLIENT.ADDRESS.ZIP , CLIENT.ADDRESS.LINE2 , CLIENT.ADDRESS.LINE3 , CLIENT.ADDRESS.LINE4 , CLIENT.ADDRESS.LINE1 , 
+PORTFOLIO.HOST_ID AS HOST , PORTFOLIO.HOST_CONTRACT_ID , PORTFOLIO.CONTRACT_TYPE AS HOST_CONTRACT_TYPE, BPO_SYSTEM_ID AS SYSTEM , 
+BPO_ARCHIVED AS ARCHIVED,PORTFOLIO.Restrict_code_AV AS RESTRICTCODEAV ,PORTFOLIO.HDVFlag ,PORTFOLIO.CLIENT_IND, POLICY.HOUSEHOLD_ID 
+
+FROM CLIENT.PARTY PARTY 
+LEFT OUTER JOIN CLIENT.PORTFOLIO PORTFOLIO ON PARTY.CLIENT_ID = PORTFOLIO.CLIENT_ID 
+LEFT OUTER JOIN CLIENT.CLIENT_ADDRESS ON PARTY.CLIENT_ID = CLIENT.CLIENT_ADDRESS.CLIENT_ID 
+LEFT OUTER JOIN CLIENT.ADDRESS ON CLIENT.CLIENT_ADDRESS.ADDRESS_ID = CLIENT.ADDRESS.ADDRESS_ID 
+LEFT OUTER JOIN CYBERLIFE.POLICY POLICY ON PORTFOLIO.BPO_POLICY_ID=POLICY.POLICY_ID
+~~~~
+
+In extract from wma - suspend code is The value is stored on the POLICY segment and the csA variable is CSA-POL-SUSPEND.This maps to billing_status _id  which is translated by 
+http://cscvdevlnxnor01/svn/uniA/trunk/bpoCommonConfig/config/rf/core/BillingStatus.xml
+
+
+
+~~
+
+-- Active with company issue state
+select avcomp.descr as CompanyCode, policy_number
+, status_id, avpolstat.descr as PolicyStatusCode
+, avstate.descr as StateCode
+, restrict_code 
+, avbillstat.descr as SuspendCode
+from cyberlife.policy  pol 
+-- Translate company
+inner join av.avdescr avcomp on company_id=avcomp.internal_value 
+inner join av.avdomain compdomain on avcomp.domain_id=compdomain.id and compdomain.av_name='CompanyCode'
+-- translate policy status
+inner join av.avdescr avpolstat on status_id=avpolstat.internal_value 
+inner join av.avdomain polstatdomain on avpolstat.domain_id=polstatdomain.id and polstatdomain.av_name='PolicyStatus'
+-- Translate state
+inner join av.avdescr avstate on issue_state_code_id=avstate.internal_value 
+inner join av.avdomain statedomain on avstate.domain_id=statedomain.id and statedomain.av_name='State' 
+-- translate suspend code
+inner join av.avdescr avbillstat on billing_status_id=avbillstat.internal_value 
+inner join av.avdomain billstatdomain on avbillstat.domain_id=billstatdomain.id and billstatdomain.av_name='BillingStatus'
+
+where pol.status_id in (1,3,9,10,15,18,20,23,24,25,29,30,31,32,41,46,47,48,53,54,61,64,900,901,902,904,905,906,907,908,923,924,925,927,929,930,931,934,935,937,938,939,941,942,943,1000500001,1000500002,1000500003,1000500004,1000500005,1000500009,1000500010)
+
+ 
+
+
+~~~
+ATHNPROD-377
+
+select pol.company_id, pol.policy_number, pol.restrict_code, pol.acct_val, 
+pol.product_type_id, 
+avprod.descr as PolicyProductCode,
+--pol.product_subtype_id, 
+--ProductSubType,
+str.* 
+from cyberlife.policy pol
+join cyberlife.strategy str on str.policy_id=pol.policy_id
+--- translate product type
+inner join av.avdescr avprod on pol.product_type_id=avprod.internal_value 
+inner join av.avdomain proddomain on avprod.domain_id=proddomain.id and proddomain.av_name='PolicyProductCode'
+where 
+current_value <20
+
+
+~ ATHNPROD-377 
+select pol.policy_number, pol.company_id, pol.acct_val, pol.restrict_code, pol.product_type_id, 
+avprod.descr as PolicyProductCode
+, pol.status_id, avpolstat.descr as PolicyStatusCode
+, str.* 
+from cyberlife.policy pol
+left join cyberlife.strategy str on str.policy_id = pol.policy_id
+--- translate product type
+inner join av.avdescr avprod on pol.product_type_id=avprod.internal_value 
+inner join av.avdomain proddomain on avprod.domain_id=proddomain.id and proddomain.av_name='PolicyProductCode'
+-- translate policy status
+inner join av.avdescr avpolstat on pol.status_id=avpolstat.internal_value 
+inner join av.avdomain polstatdomain on avpolstat.domain_id=polstatdomain.id and polstatdomain.av_name='PolicyStatus'
+where pol.acct_val = 0 and pol.status_id = 906
