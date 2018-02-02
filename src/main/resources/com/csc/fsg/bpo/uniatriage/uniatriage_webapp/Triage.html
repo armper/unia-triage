@@ -6,49 +6,273 @@
   <meta name="vaadin-version" content="8.0.5">
  </head>
  <body>
-  <vaadin-vertical-layout size-full>
-   <vaadin-horizontal-layout>
-    <vaadin-grid caption="Policy" data-item-type="com.csc.fsg.bpo.uniatriage.uniatriage_webapp.model.Policy" _id="policyGrid"></vaadin-grid>
-   </vaadin-horizontal-layout>
-   <vaadin-horizontal-layout>
-    <vaadin-grid caption="Agent" data-item-type="com.csc.fsg.bpo.uniatriage.uniatriage_webapp.model.Agent" _id="agentGrid">
-     <table>
-      <colgroup>
-       <col column-id="clientId" sortable>
-       <col column-id="companyId" sortable>
-       <col column-id="agentNumber" sortable>
-       <col column-id="statusId" sortable>
-       <col column-id="regionId" sortable>
-       <col column-id="ldHostSystem" sortable>
-       <col column-id="updatedBy" sortable>
-       <col column-id="updatedWhen" sortable>
-       <col column-id="fkaRegioncode" sortable>
-       <col column-id="fkaCompanycode" sortable>
-       <col column-id="agtLegacyId" sortable>
-       <col column-id="agtEliteStatus" sortable>
-       <col column-id="agentNpn" sortable>
-      </colgroup>
-      <thead>
-       <tr default>
-        <th plain-text column-ids="clientId">ClientId</th>
-        <th plain-text column-ids="companyId">CompanyId</th>
-        <th plain-text column-ids="agentNumber">AgentNumber</th>
-        <th plain-text column-ids="statusId">StatusId</th>
-        <th plain-text column-ids="regionId">RegionId</th>
-        <th plain-text column-ids="ldHostSystem">LdHostSystem</th>
-        <th plain-text column-ids="updatedBy">UpdatedBy</th>
-        <th plain-text column-ids="updatedWhen">UpdatedWhen</th>
-        <th plain-text column-ids="fkaRegioncode">FkaRegioncode</th>
-        <th plain-text column-ids="fkaCompanycode">FkaCompanycode</th>
-        <th plain-text column-ids="agtLegacyId">AgtLegacyId</th>
-        <th plain-text column-ids="agtEliteStatus">AgtEliteStatus</th>
-        <th plain-text column-ids="agentNpn">AgentNpn</th>
-       </tr>
-      </thead>
-      <tbody></tbody>
-     </table>
-    </vaadin-grid>
-   </vaadin-horizontal-layout>
-  </vaadin-vertical-layout>
+  <vaadin-panel size-auto>
+   <vaadin-vertical-layout size-full>
+    <vaadin-horizontal-layout size-full>
+     <vaadin-vertical-layout size-full>
+      <vaadin-text-field caption="Find By Policy Number" _id="policyNumberTextField"></vaadin-text-field>
+      <vaadin-panel caption="Policies" size-auto></vaadin-panel>
+      <vaadin-grid caption="Policy" data-item-type="com.csc.fsg.bpo.uniatriage.uniatriage_webapp.model.Policy" _id="policyGrid">
+       <table>
+        <colgroup>
+         <col column-id="policyId" sortable>
+         <col column-id="companyId" sortable>
+         <col column-id="policyNumber" sortable>
+         <col column-id="regionId" sortable>
+         <col column-id="statusId" sortable>
+         <col column-id="faceAmount" sortable>
+         <col column-id="lastActgActivityDate" sortable>
+         <col column-id="contractActivityDate" sortable>
+         <col column-id="premiumPaidToDate" sortable>
+         <col column-id="issueDate" sortable>
+         <col column-id="lifeInsuranceTestMethod" sortable>
+         <col column-id="initialDepositPremium" sortable>
+         <col column-id="retirementAge" sortable>
+         <col column-id="maxLoanAmount" sortable>
+         <col column-id="marketValueAdjustmentAmount" sortable>
+         <col column-id="bonusVestedAccountValue" sortable>
+         <col column-id="bonusNonvestedAccountValue" sortable>
+         <col column-id="bonusTotalAccountValue" sortable>
+         <col column-id="freeWithdrawlAmount" sortable>
+        </colgroup>
+        <thead>
+         <tr default>
+          <th plain-text column-ids="policyId">PolicyId</th>
+          <th plain-text column-ids="companyId">CompanyId</th>
+          <th plain-text column-ids="policyNumber">PolicyNumber</th>
+          <th plain-text column-ids="regionId">RegionId</th>
+          <th plain-text column-ids="statusId">StatusId</th>
+          <th plain-text column-ids="faceAmount">FaceAmount</th>
+          <th plain-text column-ids="lastActgActivityDate">LastActgActivityDate</th>
+          <th plain-text column-ids="contractActivityDate">ContractActivityDate</th>
+          <th plain-text column-ids="premiumPaidToDate">PremiumPaidToDate</th>
+          <th plain-text column-ids="issueDate">IssueDate</th>
+          <th plain-text column-ids="lifeInsuranceTestMethod">LifeInsuranceTestMethod</th>
+          <th plain-text column-ids="initialDepositPremium">InitialDepositPremium</th>
+          <th plain-text column-ids="retirementAge">RetirementAge</th>
+          <th plain-text column-ids="maxLoanAmount">MaxLoanAmount</th>
+          <th plain-text column-ids="marketValueAdjustmentAmount">MarketValueAdjustmentAmount</th>
+          <th plain-text column-ids="bonusVestedAccountValue">BonusVestedAccountValue</th>
+          <th plain-text column-ids="bonusNonvestedAccountValue">BonusNonvestedAccountValue</th>
+          <th plain-text column-ids="bonusTotalAccountValue">BonusTotalAccountValue</th>
+          <th plain-text column-ids="freeWithdrawlAmount">FreeWithdrawlAmount</th>
+         </tr>
+        </thead>
+        <tbody></tbody>
+       </table>
+      </vaadin-grid>
+     </vaadin-vertical-layout>
+     <vaadin-vertical-layout size-auto>
+      <vaadin-panel caption="Agents" size-auto>
+       <vaadin-grid caption="Agent" data-item-type="com.csc.fsg.bpo.uniatriage.uniatriage_webapp.model.Agent" _id="agentGrid">
+        <table>
+         <colgroup>
+          <col column-id="clientId" sortable>
+          <col column-id="companyId" sortable>
+          <col column-id="agentNumber" sortable>
+          <col column-id="statusId" sortable>
+          <col column-id="regionId" sortable>
+          <col column-id="ldHostSystem" sortable>
+          <col column-id="updatedBy" sortable>
+          <col column-id="updatedWhen" sortable>
+          <col column-id="fkaRegioncode" sortable>
+          <col column-id="fkaCompanycode" sortable>
+          <col column-id="agtLegacyId" sortable>
+          <col column-id="agtEliteStatus" sortable>
+          <col column-id="agentNpn" sortable>
+         </colgroup>
+         <thead>
+          <tr default>
+           <th plain-text column-ids="clientId">ClientId</th>
+           <th plain-text column-ids="companyId">CompanyId</th>
+           <th plain-text column-ids="agentNumber">AgentNumber</th>
+           <th plain-text column-ids="statusId">StatusId</th>
+           <th plain-text column-ids="regionId">RegionId</th>
+           <th plain-text column-ids="ldHostSystem">LdHostSystem</th>
+           <th plain-text column-ids="updatedBy">UpdatedBy</th>
+           <th plain-text column-ids="updatedWhen">UpdatedWhen</th>
+           <th plain-text column-ids="fkaRegioncode">FkaRegioncode</th>
+           <th plain-text column-ids="fkaCompanycode">FkaCompanycode</th>
+           <th plain-text column-ids="agtLegacyId">AgtLegacyId</th>
+           <th plain-text column-ids="agtEliteStatus">AgtEliteStatus</th>
+           <th plain-text column-ids="agentNpn">AgentNpn</th>
+          </tr>
+         </thead>
+         <tbody></tbody>
+        </table>
+       </vaadin-grid>
+      </vaadin-panel>
+     </vaadin-vertical-layout>
+     <vaadin-vertical-layout size-auto>
+      <vaadin-panel caption="Strategy" size-auto>
+       <vaadin-grid data-item-type="com.csc.fsg.bpo.uniatriage.uniatriage_webapp.model.Strategy" _id="stragegyGrid">
+        <table>
+         <colgroup>
+          <col column-id="strategyId" sortable>
+          <col column-id="strategyTypeId" sortable>
+          <col column-id="policy" sortable>
+          <col column-id="sequenceNumber" sortable>
+          <col column-id="currentValue" sortable>
+          <col column-id="interestRate" sortable>
+          <col column-id="interestCap" sortable>
+          <col column-id="parRate" sortable>
+          <col column-id="sprdRate" sortable>
+          <col column-id="expenseCharge" sortable>
+          <col column-id="allocationPercent" sortable>
+         </colgroup>
+         <thead>
+          <tr default>
+           <th plain-text column-ids="strategyId">StrategyId</th>
+           <th plain-text column-ids="strategyTypeId">StrategyTypeId</th>
+           <th plain-text column-ids="policy">Policy</th>
+           <th plain-text column-ids="sequenceNumber">SequenceNumber</th>
+           <th plain-text column-ids="currentValue">CurrentValue</th>
+           <th plain-text column-ids="interestRate">InterestRate</th>
+           <th plain-text column-ids="interestCap">InterestCap</th>
+           <th plain-text column-ids="parRate">ParRate</th>
+           <th plain-text column-ids="sprdRate">SprdRate</th>
+           <th plain-text column-ids="expenseCharge">ExpenseCharge</th>
+           <th plain-text column-ids="allocationPercent">AllocationPercent</th>
+          </tr>
+         </thead>
+         <tbody></tbody>
+        </table>
+       </vaadin-grid>
+      </vaadin-panel>
+     </vaadin-vertical-layout>
+    </vaadin-horizontal-layout>
+    <vaadin-horizontal-layout>
+     <vaadin-panel caption="Policy to Agent" size-auto>
+      <vaadin-grid data-item-type="com.csc.fsg.bpo.uniatriage.uniatriage_webapp.model.PolicyAgent" _id="policyToAgentGrid">
+       <table>
+        <colgroup>
+         <col column-id="policyAgentId" sortable>
+         <col column-id="policyId" sortable>
+         <col column-id="clientId" sortable>
+         <col column-id="primaryProducerFlag" sortable>
+         <col column-id="topProducerFlag" sortable>
+         <col column-id="primaryServicingAgentFlag" sortable>
+         <col column-id="servicingAgentFlag" sortable>
+         <col column-id="writingAgentFlag" sortable>
+         <col column-id="commissionPercentage" sortable>
+         <col column-id="levelNumber" sortable>
+         <col column-id="updatedBy" sortable>
+         <col column-id="updatedWhen" sortable>
+         <col column-id="trailComm" sortable>
+         <col column-id="agentProfile" sortable>
+         <col column-id="marketingOrg" sortable>
+        </colgroup>
+        <thead>
+         <tr default>
+          <th plain-text column-ids="policyAgentId">PolicyAgentId</th>
+          <th plain-text column-ids="policyId">PolicyId</th>
+          <th plain-text column-ids="clientId">ClientId</th>
+          <th plain-text column-ids="primaryProducerFlag">PrimaryProducerFlag</th>
+          <th plain-text column-ids="topProducerFlag">TopProducerFlag</th>
+          <th plain-text column-ids="primaryServicingAgentFlag">PrimaryServicingAgentFlag</th>
+          <th plain-text column-ids="servicingAgentFlag">ServicingAgentFlag</th>
+          <th plain-text column-ids="writingAgentFlag">WritingAgentFlag</th>
+          <th plain-text column-ids="commissionPercentage">CommissionPercentage</th>
+          <th plain-text column-ids="levelNumber">LevelNumber</th>
+          <th plain-text column-ids="updatedBy">UpdatedBy</th>
+          <th plain-text column-ids="updatedWhen">UpdatedWhen</th>
+          <th plain-text column-ids="trailComm">TrailComm</th>
+          <th plain-text column-ids="agentProfile">AgentProfile</th>
+          <th plain-text column-ids="marketingOrg">MarketingOrg</th>
+         </tr>
+        </thead>
+        <tbody></tbody>
+       </table>
+      </vaadin-grid>
+     </vaadin-panel>
+     <vaadin-panel caption="Party" size-auto _id="party">
+      <vaadin-grid data-item-type="com.csc.fsg.bpo.uniatriage.uniatriage_webapp.model.Party" _id="partyGrid">
+       <table>
+        <colgroup>
+         <col column-id="clientId" sortable>
+         <col column-id="clientTypeId" sortable>
+         <col column-id="fullName" sortable>
+         <col column-id="emailAddress" sortable>
+         <col column-id="bpoSplitPercentage" sortable>
+         <col column-id="bpoAgentNumber" sortable>
+         <col column-id="bpoBeneficiaryTypeId" sortable>
+         <col column-id="beneficiaryRelationshipId" sortable>
+        </colgroup>
+        <thead>
+         <tr default>
+          <th plain-text column-ids="clientId">ClientId</th>
+          <th plain-text column-ids="clientTypeId">ClientTypeId</th>
+          <th plain-text column-ids="fullName">FullName</th>
+          <th plain-text column-ids="emailAddress">EmailAddress</th>
+          <th plain-text column-ids="bpoSplitPercentage">BpoSplitPercentage</th>
+          <th plain-text column-ids="bpoAgentNumber">BpoAgentNumber</th>
+          <th plain-text column-ids="bpoBeneficiaryTypeId">BpoBeneficiaryTypeId</th>
+          <th plain-text column-ids="beneficiaryRelationshipId">BeneficiaryRelationshipId</th>
+         </tr>
+        </thead>
+        <tbody></tbody>
+       </table>
+      </vaadin-grid>
+     </vaadin-panel>
+     <vaadin-panel caption="Coverage" size-auto>
+      <vaadin-grid caption="Coverage" data-item-type="com.csc.fsg.bpo.uniatriage.uniatriage_webapp.model.Coverage" _id="coverageGrid">
+       <table>
+        <colgroup>
+         <col column-id="coverageId" sortable>
+         <col column-id="policy" sortable>
+         <col column-id="baseBenefitFlag" sortable>
+         <col column-id="phaseInd" sortable>
+         <col column-id="premiumAccumulationValue" sortable>
+         <col column-id="premiumAccumulationRate" sortable>
+         <col column-id="coverageStatus" sortable>
+         <col column-id="coverageProductId" sortable>
+         <col column-id="issueAge" sortable>
+         <col column-id="specifiedAmount" sortable>
+         <col column-id="numberUnits" sortable>
+         <col column-id="valuePerUnit" sortable>
+         <col column-id="effectiveDate" sortable>
+         <col column-id="statusDate" sortable>
+         <col column-id="benefitCeaseDate" sortable>
+         <col column-id="dividendOptionId" sortable>
+         <col column-id="accumDividends" sortable>
+         <col column-id="dIVIDEND_INTEREST_RATE" sortable>
+         <col column-id="totalPaidUpAdds" sortable>
+         <col column-id="dividendPurchasedAmount" sortable>
+         <col column-id="dividendLastAmountRecieved" sortable>
+         <col column-id="dividendMaxWithDrawalAmount" sortable>
+        </colgroup>
+        <thead>
+         <tr default>
+          <th plain-text column-ids="coverageId">CoverageId</th>
+          <th plain-text column-ids="policy">Policy</th>
+          <th plain-text column-ids="baseBenefitFlag">BaseBenefitFlag</th>
+          <th plain-text column-ids="phaseInd">PhaseInd</th>
+          <th plain-text column-ids="premiumAccumulationValue">PremiumAccumulationValue</th>
+          <th plain-text column-ids="premiumAccumulationRate">PremiumAccumulationRate</th>
+          <th plain-text column-ids="coverageStatus">CoverageStatus</th>
+          <th plain-text column-ids="coverageProductId">CoverageProductId</th>
+          <th plain-text column-ids="issueAge">IssueAge</th>
+          <th plain-text column-ids="specifiedAmount">SpecifiedAmount</th>
+          <th plain-text column-ids="numberUnits">NumberUnits</th>
+          <th plain-text column-ids="valuePerUnit">ValuePerUnit</th>
+          <th plain-text column-ids="effectiveDate">EffectiveDate</th>
+          <th plain-text column-ids="statusDate">StatusDate</th>
+          <th plain-text column-ids="benefitCeaseDate">BenefitCeaseDate</th>
+          <th plain-text column-ids="dividendOptionId">DividendOptionId</th>
+          <th plain-text column-ids="accumDividends">AccumDividends</th>
+          <th plain-text column-ids="dIVIDEND_INTEREST_RATE">DIVIDEND_INTEREST_RATE</th>
+          <th plain-text column-ids="totalPaidUpAdds">TotalPaidUpAdds</th>
+          <th plain-text column-ids="dividendPurchasedAmount">DividendPurchasedAmount</th>
+          <th plain-text column-ids="dividendLastAmountRecieved">DividendLastAmountRecieved</th>
+          <th plain-text column-ids="dividendMaxWithDrawalAmount">DividendMaxWithDrawalAmount</th>
+         </tr>
+        </thead>
+        <tbody></tbody>
+       </table>
+      </vaadin-grid>
+     </vaadin-panel>
+    </vaadin-horizontal-layout>
+   </vaadin-vertical-layout>
+  </vaadin-panel>
  </body>
 </html>

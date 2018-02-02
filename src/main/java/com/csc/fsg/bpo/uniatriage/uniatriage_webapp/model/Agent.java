@@ -1,27 +1,31 @@
 package com.csc.fsg.bpo.uniatriage.uniatriage_webapp.model;
 
-import java.math.BigInteger;
-import java.time.LocalDateTime;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import lombok.Data;
 import lombok.ToString;
 
-@Entity(name="agent")
+@Entity
 @Table(name = "agent", schema = "cyberlife")
 @Data
 @ToString(exclude="policies")
-public class Agent {
+public class Agent implements Serializable{
 
-	@Id
+	private static final long serialVersionUID = -8165798951292606888L;
+
+	@Id	
 	private String clientId;
 
 	@NotNull
@@ -40,7 +44,7 @@ public class Agent {
 
 	private String updatedBy;
 
-//	private LocalDateTime updatedWhen;
+	private String updatedWhen;
 
 	private Integer fkaRegioncode;
 
@@ -51,7 +55,11 @@ public class Agent {
 	private String agtEliteStatus;
 
 	private String agentNpn;
-//
-	@ManyToMany(mappedBy = "agents")
+
+	@ManyToMany
+	@JoinTable(name = "policy_agent", schema = "cyberlife", joinColumns = @JoinColumn(name = "client_id")
+	, inverseJoinColumns = @JoinColumn(name = "policy_id")
+	)
 	private Collection<Policy> policies=new HashSet<>();
+
 }

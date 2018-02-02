@@ -8,16 +8,22 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.csc.fsg.bpo.uniatriage.uniatriage_webapp.backend.AgentRepository;
+import com.csc.fsg.bpo.uniatriage.uniatriage_webapp.backend.CoverageRepository;
+import com.csc.fsg.bpo.uniatriage.uniatriage_webapp.backend.PartyRepository;
+import com.csc.fsg.bpo.uniatriage.uniatriage_webapp.backend.PolicyAgentRepository;
 import com.csc.fsg.bpo.uniatriage.uniatriage_webapp.backend.PolicyRepository;
+import com.csc.fsg.bpo.uniatriage.uniatriage_webapp.backend.StrategyRepository;
 import com.csc.fsg.bpo.uniatriage.uniatriage_webapp.model.Agent;
+import com.csc.fsg.bpo.uniatriage.uniatriage_webapp.model.Coverage;
+import com.csc.fsg.bpo.uniatriage.uniatriage_webapp.model.Party;
 import com.csc.fsg.bpo.uniatriage.uniatriage_webapp.model.Policy;
+import com.csc.fsg.bpo.uniatriage.uniatriage_webapp.model.PolicyAgent;
+import com.csc.fsg.bpo.uniatriage.uniatriage_webapp.model.Strategy;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.navigator.View;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
-import com.vaadin.ui.Grid;
-
 import lombok.extern.log4j.Log4j;
 
 @Log4j
@@ -33,6 +39,14 @@ public class TriageView extends Triage implements View {
 
 	private final AgentRepository agentRepository;
 
+	private final PolicyAgentRepository policyAgentRepository;
+
+	private final PartyRepository partyRepository;
+
+	private final StrategyRepository strategyRepository;
+
+	private final CoverageRepository coverageRepository;
+
 	private Collection<Policy> policies = new HashSet<>();
 
 	private ListDataProvider<Policy> policyDataProvider = DataProvider.ofCollection(policies);
@@ -41,47 +55,97 @@ public class TriageView extends Triage implements View {
 
 	private ListDataProvider<Agent> agentDataProvider = DataProvider.ofCollection(agents);
 
+	private Collection<PolicyAgent> policyAgents = new HashSet<>();
+
+	private ListDataProvider<PolicyAgent> policyToAgentProvider = DataProvider.ofCollection(policyAgents);
+
+	private Collection<Strategy> strategies = new HashSet<>();
+
+	private ListDataProvider<Strategy> stragegyProvider = DataProvider.ofCollection(strategies);
+
+	private Collection<Coverage> coverages = new HashSet<>();
+
+	private ListDataProvider<Coverage> coverageProvider = DataProvider.ofCollection(coverages);
+
 	@Autowired
-	public TriageView(PolicyRepository policyRepository, AgentRepository agentRepository) {
+	public TriageView(PolicyRepository policyRepository, AgentRepository agentRepository,
+			PolicyAgentRepository policyAgentRepository, PartyRepository partyRepository,
+			StrategyRepository strategyRepository, CoverageRepository coverageRepository) {
 		this.policyRepository = policyRepository;
 		this.agentRepository = agentRepository;
+		this.policyAgentRepository = policyAgentRepository;
+		this.partyRepository = partyRepository;
+		this.strategyRepository = strategyRepository;
+		this.coverageRepository = coverageRepository;
 	}
 
 	@PostConstruct
 	void init() {
 
-		super.policyGrid.addColumn(Policy::getPolicyNumber);
-
 		super.policyGrid.setDataProvider(this.policyDataProvider);
-
-		Collection<Policy> findAll = (Collection<Policy>) this.policyRepository.findAll();
-
-		findAll.forEach(f -> log.debug(f));
-
-		policies.addAll(findAll);
 
 		this.policyDataProvider.refreshAll();
 
-		super.agentGrid.addColumn(Agent::getClientId);
+		super.agentGrid.addColumn(a -> partyRepository.findOne(a.getClientId()).getFullName())
+				.setCaption("Client Name");
+		super.agentGrid.addColumn(a -> partyRepository.findOne(a.getClientId()).getEmailAddress())
+				.setCaption("Email Address");
 
 		super.agentGrid.setDataProvider(this.agentDataProvider);
 
-		Collection<Agent> findAllAgents = (Collection<Agent>) this.agentRepository.findAll();
+		super.policyToAgentGrid.addColumn(p -> p.getClientId().getFullName()).setCaption("Client Name");
 
-		// agents.addAll(findAllAgents);
+		super.policyToAgentGrid.setDataProvider(this.policyToAgentProvider);
 
-		// this.agentDataProvider.refreshAll();
+		super.stragegyGrid.setDataProvider(this.stragegyProvider = DataProvider.ofCollection(strategies));
+
+		super.coverageGrid.setDataProvider(this.coverageProvider);
 
 		super.policyGrid.addSelectionListener(listener -> {
-			log.info("pushed");
-			this.agents = new HashSet<>();
-			Collection<Agent> findByPolicies = this.agentRepository.findByPolicies(listener.getAllSelectedItems());
-			this.agents.addAll(findByPolicies);
-			findByPolicies.forEach(p->log.info("loop "+p));
-			
+
+			this.agents.clear();
+
+			this.policyAgents.clear();
+
+			this.strategies.clear();
+
+			this.coverages.clear();
+
+			listener.getFirstSelectedItem().ifPresent(policy -> {
+				this.agents.addAll(this.agentRepository.findByPolicy(policy));
+				this.policyAgents.addAll(this.policyAgentRepository.findByPolicy(policy));
+				this.strategies.addAll(this.strategyRepository.findByPolicy(policy));
+				this.coverages.addAll(this.coverageRepository.findByPolicy(policy));
+			});
+
 			this.agentDataProvider.refreshAll();
-			
-			
+			this.policyToAgentProvider.refreshAll();
+			this.stragegyProvider.refreshAll();
+			this.coverageProvider.refreshAll();
+
+		});
+
+		super.agentGrid.addSelectionListener(listener -> {
+			listener.getFirstSelectedItem().ifPresent(agent -> {
+
+				log.debug(agent.getClientId());
+
+				Party party = partyRepository.findOne(agent.getClientId());
+
+				Collection<Party> parties = new HashSet<>();
+				parties.add(party);
+				super.partyGrid.setItems(parties);
+
+				log.debug(party.getFullName());
+			});
+		});
+
+		super.policyNumberTextField.addValueChangeListener(listener -> {
+			this.policies.clear();
+			Collection<Policy> findByPolicyNumber = this.policyRepository
+					.findByPolicyNumberStartingWithIgnoreCase(listener.getValue());
+			this.policies.addAll(findByPolicyNumber);
+			this.policyDataProvider.refreshAll();
 
 		});
 	}

@@ -9,6 +9,8 @@ import com.csc.fsg.bpo.uniatriage.uniatriage_webapp.model.Policy;
 
 public interface PolicyRepository extends CrudRepository<Policy, Integer> {
 
+	public Collection<Policy> findByPolicyNumberStartingWithIgnoreCase(String policyNumber);
+
 	//Query q = this.em.createQuery("SELECT o FROM Order o JOIN FETCH o.items i WHERE o.id = :id");
 
 //	@Query("select p from policy p left join fetch p.agents a")
